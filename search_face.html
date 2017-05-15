@@ -1,0 +1,141 @@
+<DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="David Wang 王元恺">
+		<meta name="date" content="2017-05-09">
+
+		<title>面部识别</title>
+
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/common.css" rel="stylesheet">
+
+		<script src="./js/aws-sdk-2.48.0.min.js"></script>
+		<script src="./js/common.js"></script>
+		<script>
+			window.onload = function() {
+				Unauthenticated_Login();
+				Search_Face_Default();
+			}
+			
+			function Search_Face_Default() {
+				var img = document.getElementById("pic-show-img");
+				var params = {
+					CollectionId: COLLECTION_ID,
+					FaceMatchThreshold: MIN_SIMILARITY,
+					MaxFaces: MAX_FACES,
+					Image: {
+						S3Object: {
+							Bucket: BUCKET_NAME,
+							Name: img.src.substring(img.src.indexOf("img/"))
+						}
+					}
+				}
+				var modal = document.getElementsByClassName("modal");
+				modal[0].style.display = "block";
+
+				var rekognition = new AWS.Rekognition();
+				rekognition.searchFacesByImage(params, function(err, data) {
+					if (err == null) Handle_Search_Face_Data(data);
+					else console.log(err);
+					modal[0].style.display = "none";
+				});
+			}
+		</script>
+	</head>
+
+	<body>
+		<!-- Navigation -->
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="modal" style="display: none">
+				<div class="centerX">
+					<img alt="loading..." src="img/loader.gif" />
+				</div>
+			</div>
+			<div class="container">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="./index.html"><img src="img/logo.png"></img></a>
+				</div>
+			</div>
+			<!-- /.container -->
+		</nav>
+
+		<div class="block-fit-navbar"></div>
+
+		<div class="container">
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<div class="page-header">
+						<h2>面部识别 <small>Amazon Rekognition DEMO</small></h2>
+					</div>
+				</div>
+			</div>
+
+			<div class="row clearfix main-content">
+				<div class="col-md-12 column">
+					<h3>演示描述</h3>
+					<p>自动识别您上传的图像，在演示人脸库中搜索所有面部相似度高的图像，相似度越高越可能为同一个人，最后把所有相似度高的图像呈现出来。</p>
+				</div>
+
+				<div class="col-md-12 column">
+					<h3>演示人脸库</h3>
+					<p>请注意，<b>您上传的图像中的面部将保存在测试人脸库中</b>。如果您不希望图像中一个或多个面部被保存下来，请及时输入图像码删除！</p>
+				</div>
+				<div class="col-md-12 column upload-picture-button index-face-button">
+					<input type="file" id="picture-file" alt="请升级浏览器版本用于支持文件上传功能" onchange="Upload_Picture(this)">
+					<a class="btn btn-primary btn-large button-margin" onclick="Index_Face()">上传图片</a>
+				</div>
+				<div class="col-md-12 column index-face-result">
+					<label class="index-face-error" style="display: none">您所上传的图片中没有面孔，请换一张图片或稍后重试!</label>
+				</div>
+
+				<div class="col-md-12 column">
+					<h3>演示内容</h3>
+				</div>
+				<div class="col-md-12 column upload-picture-button">
+					<input type="file" id="picture-file" alt="请升级浏览器版本用于支持文件上传功能" onchange="Upload_Picture2(this)">
+					<a class="btn btn-primary btn-large button-margin" onclick="Search_Face()">搜索面孔</a>
+				</div>
+				<div class="col-md-8 column" id="pic-show">
+					<img id="pic-show-img" alt="您的浏览器版本过老，不支持 data URI scheme，图片无法显示!" src="img/search_face/demo-collection1.jpg" />
+				</div>
+				<div class="col-md-4 column" id="pic-info">
+					<label class="pic-info-error" style="display: none">您所上传的图片中没有面孔，请换一张图片或稍后重试!</label>
+					<label class="pic-info-failure" style="display: none">人脸库中未找到相似面部。</label>
+				</div>
+
+				<div class="col-md-12 column">
+					<h3>删除图像</h3>
+					<p>请输入图像码删除人脸库中的图像。</p>
+				</div>
+				<div class="col-md-12 column index-face-delete">
+					<div class="column index-face-input">
+						图像码： <input type="text" class="index-face-code" />
+					</div>
+					<a class="btn btn-primary btn-large button-margin" onclick="Delete_Face()">删除图片</a>
+				</div>
+				<div class="col-md-12 column delete-face-result">
+					<label class="delete-face-error" style="display: none">您输入的图像码有误，请重试!</label>
+				</div>
+			</div>
+			
+			<hr>
+			<div class="row clearfix footer">
+				<div class="col-md-12 column">
+					<p>Copyright © Amazon Web Services 2017</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+

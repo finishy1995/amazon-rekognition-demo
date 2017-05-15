@@ -1,0 +1,95 @@
+<DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="David Wang 王元恺">
+		<meta name="date" content="2017-05-09">
+
+		<title>图像识别演示 [Amazon Rekognition DEMO]</title>
+
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/common.css" rel="stylesheet">
+
+		<script src="./js/aws-sdk-2.48.0.min.js"></script>
+		<script src="./js/common.js"></script>
+	</head>
+
+	<body>
+		<!-- Navigation -->
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="container">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#"><img src="img/logo.png"></img></a>
+				</div>
+			</div>
+			<!-- /.container -->
+		</nav>
+
+		<div class="block-fit-navbar"></div>
+
+		<div class="container">
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<div class="page-header">
+						<h2>图像识别演示 <small>Amazon Rekognition DEMO</small></h2>
+					</div>
+				</div>
+			</div>
+
+			<div class="row clearfix main-content">
+				<div class="col-md-12 column">
+					<h3>演示描述</h3>
+					<p>通过Amazon Rekognition服务进行图像识别。在演示应用中，我们将展示图像识别技术分别应用于对象场景检测，图像审核，面部分析，面孔比较以及面部识别。您可以通过页面演示来体验图像识别技术的准确性与效果。本演示仅用于试验和参考用途，如果您想开发自己的图像识别应用，请登录AWS官网查看详细信息。如果您发现了页面上的任何错误或有任何建议，请发送邮件至：<a href="mailto:lintchen@amazon.com">lintchen@amazon.com</a>, <a href="mailto:davwan@amazon.com">davwan@amazon.com</a>进行探讨，谢谢！</p>
+				</div>
+
+				<div class="col-md-12 column">
+					<h3>演示内容</h3>
+					<ul class="demo-list clearfix">
+						<li class="demo-item col-md-3">
+							<p class="demo-item-title">对象场景检测</p>
+							<img class="demo-item-img"  src="img/demo-icon1.png" />
+							<a target="_blank" class="demo-item-link" href="labels_get.html">进入演示</a>
+						</li>
+						<li class="demo-item col-md-3">
+							<p class="demo-item-title">图像审核</p>
+							<img class="demo-item-img"  src="img/demo-icon2.png" />
+							<a target="_blank" class="demo-item-link" href="labels_mod.html">进入演示</a>
+						</li>
+						<li class="demo-item col-md-3">
+							<p class="demo-item-title">面部分析</p>
+							<img class="demo-item-img"  src="img/demo-icon3.png" />
+							<a target="_blank" class="demo-item-link" href="face_detect.html">进入演示</a>
+						</li>
+						<li class="demo-item col-md-3">
+							<p class="demo-item-title">面孔比较</p>
+							<img class="demo-item-img"  src="img/demo-icon4.png" />
+							<a target="_blank" class="demo-item-link" href="face_compare.html">进入演示</a>
+						</li>
+						<li class="demo-item col-md-3">
+							<p class="demo-item-title">面部识别</p>
+							<img class="demo-item-img"  src="img/demo-icon5.png" />
+							<a target="_blank" class="demo-item-link" href="search_face.html">进入演示</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<hr>
+			<div class="row clearfix footer">
+				<div class="col-md-12 column">
+					<p>Copyright © Amazon Web Services 2017</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

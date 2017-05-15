@@ -1,0 +1,245 @@
+<DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="David Wang 王元恺">
+		<meta name="date" content="2017-05-09">
+
+		<title>面部分析</title>
+
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/common.css" rel="stylesheet">
+
+		<script src="./js/aws-sdk-2.48.0.min.js"></script>
+		<script src="./js/common.js"></script>
+		<script>
+			window.onload = function() {
+				Unauthenticated_Login();
+				rekognition = new AWS.Rekognition();
+			}
+		</script>
+	</head>
+
+	<body>
+		<!-- Navigation -->
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="modal" style="display: none">
+				<div class="centerX">
+					<img alt="loading..." src="img/loader.gif" />
+				</div>
+			</div>
+			<div class="container">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="./index.html"><img src="img/logo.png"></img></a>
+				</div>
+			</div>
+			<!-- /.container -->
+		</nav>
+
+		<div class="block-fit-navbar"></div>
+
+		<div class="container">
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<div class="page-header">
+						<h2>面部分析 <small>Amazon Rekognition DEMO</small></h2>
+					</div>
+				</div>
+			</div>
+
+			<div class="row clearfix main-content">
+				<div class="col-md-12 column">
+					<h3>演示描述</h3>
+					<p>自动识别图像中的所有面部信息，并为图像中的最多四人，根据如下规则推荐相关运动。（为了保护您的隐私，您上传的图像不会被保存下来。）</p>
+					<div class="table-responsive col-md-6">
+						<table class="table table-bordered table-striped responsive-utilities">
+							<thead>
+								<tr> <th>性别\年龄</th><th>0~25 </th> <th>25-50</th> <th> 50-*</th> </tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th scope="row">男性</th>
+									<td>打篮球</td>
+									<td>游泳</td>
+									<td>打太极</td>
+								</tr>
+								<tr>
+									<th scope="row">女性</th>
+									<td>打羽毛球</td>
+									<td>练瑜伽</td>
+									<td>散步</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="col-md-12 column">
+					<h3>演示内容</h3>
+				</div>
+				<div class="col-md-12 column upload-picture-button">
+					<button id="snap" class="btn btn-success">摄像开始/停止</button>
+				</div>
+				<div class="col-md-8">
+                	<video id="video" width="640" height="480" autoplay></video>
+                	<canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+            	</div>
+
+            	<div class="col-md-12 column">
+                	<h3 class="page-header">为您推荐</h3>
+            	</div>
+
+            	<div class="col-sm-1 col-xs-6">
+                	<canvas id="f_canvas_0" ></canvas>
+                	<p id="p_0"></p>
+            	</div>
+            	<div class="col-sm-2 col-xs-6" >
+                	<img id="img_0"  width="240" height="240" style="display: none"></img>
+            	</div>
+
+            	<div class="col-sm-1 col-xs-6">
+                	<canvas id="f_canvas_1" ></canvas>
+                	<p id="p_1"></p>
+            	</div>
+            	<div class="col-sm-2 col-xs-6">
+                	<img id="img_1" width="240" height="240" style="display: none"></img>
+            	</div>
+            	<div class="col-sm-1 col-xs-6">
+                	<canvas id="f_canvas_2" ></canvas>
+                	<p id="p_2"></p>
+            	</div>
+            	<div class="col-sm-2 col-xs-6">
+                	<img id="img_2" width="240" height="240" style="display: none"></img>
+            	</div>
+            	<div class="col-sm-1 col-xs-6">
+                	<canvas id="f_canvas_3" ></canvas>
+                	<p id="p_3"></p>
+            	</div>
+            	<div class="col-sm-2 col-xs-6">
+                	<img id="img_3" width="240" height="240" style="display: none"></img>
+            	</div>
+			</div>
+
+			<hr>
+			<div class="row clearfix footer">
+				<div class="col-md-12 column">
+					<p>Copyright © Amazon Web Services 2017</p>
+				</div>
+			</div>
+		</div>
+
+		<script src="js/jquery.js"></script>
+		<script>
+    			// Grab elements, create settings, etc.
+    			var video = document.getElementById('video');
+    			var canvas = document.getElementById('canvas');
+    			var context = canvas.getContext('2d');
+    			var localStream;
+    
+    			// Get access to the camera!
+    			if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        			// Not adding `{ audio: true }` since we only want video now
+        			navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+            				localStream=stream;
+            				video.src = window.URL.createObjectURL(localStream);
+            				video.play();
+        			});
+    			}
+    			// Trigger photo take
+    			document.getElementById("snap").addEventListener("click", function() {
+        			if (canvas.style.display == "none"){
+            				$(".modal").show();
+            				context.drawImage(video, 0, 0, 640, 480);
+            				var dataURL = canvas.toDataURL("image/png");
+            				video.pause();
+            				video.src=null;
+            				video.style.display = "none";
+            				canvas.style.display = "block";
+            				var params = {Attributes:["ALL"],Image: {Bytes:dataURItoBlob(dataURL)}};
+            				rekognition.detectFaces(params, function(err, data) {
+                   				if (err) console.log(err, err.stack); // an error occurred
+                   				else{
+                    					console.log(data);           // successful response
+                    					$(".modal").hide();     
+                    					for(var i=0;i<data.FaceDetails.length&&i<4;i++){
+                        					try{
+                            						var face_height= data.FaceDetails[i].BoundingBox.Height;
+                            						var face_left= data.FaceDetails[i].BoundingBox.Left;
+                            						var face_top= data.FaceDetails[i].BoundingBox.Top;
+                            						var face_width= data.FaceDetails[i].BoundingBox.Width;
+                            						if (face_width<1&&face_top<1&&face_left<1&&face_height<1){
+                                						var facecanvas = document.getElementById("f_canvas_"+i);
+                                						var face_ctx=facecanvas.getContext('2d');
+                                						face_ctx.drawImage(canvas,640*face_left,480*face_top,640*face_width,480*face_height,0,0,100,100);
+                                						var average_age= (data.FaceDetails[i].AgeRange.High+data.FaceDetails[i].AgeRange.Low)/2;
+                                						var gender=data.FaceDetails[i].Gender.Value;
+                                						var img=document.getElementById("img_"+i);
+                                						var word=document.getElementById("p_"+i);
+                                						var html="";    
+                                						if(gender=="Male"){
+                                    							html+=" 男性 ";
+                                    							if(average_age<=25){
+                                        							img.src="img/male25.jpeg";
+                                        							img.style.display ="block";
+                                    							}else if(average_age<50){
+                                        							img.src="img/male50.jpeg";
+                                        							img.style.display ="block";
+                                    							}else{
+                                        							img.src="img/malex.jpeg";
+                                        							img.style.display ="block";
+                                    							}
+                                						}else{
+                                   							html+=" 女性 ";
+                                  							if(average_age<=25){
+                                        							img.src="img/female25.jpeg";
+                                        							img.style.display ="block";
+                                    							}else if(average_age<50){
+                                        							img.src="img/female50.jpeg";
+                                        							img.style.display ="block";
+                                    							}else{
+                                        							img.src="img/femalex.jpeg";
+                                        							img.style.display ="block";
+                                    							} 
+                                						}
+                                						html+= data.FaceDetails[i].AgeRange.Low+"~"+data.FaceDetails[i].AgeRange.High+"岁";
+                                						word.innerHTML=html;
+                            						}
+                            
+                        					}catch(e){
+                            						console.log(e);
+                        					}
+                    					}
+                   				}
+       					});
+        			}else if (canvas.style.display == "block"){
+            				canvas.style.display = "none";
+            				for(var i=0;i<4;i++){
+                				var facecanvas = document.getElementById("f_canvas_"+i);
+                				var face_ctx=facecanvas.getContext('2d');
+                				face_ctx.clearRect(0, 0, facecanvas.width, facecanvas.height);
+                				var img=document.getElementById("img_"+i);
+                				img.src='';
+                				img.style.display ="none";
+                				document.getElementById("p_"+i).innerHTML="";
+            				}
+            				video.style.display = "block"; 
+            				video.src = window.URL.createObjectURL(localStream);
+            				video.play();
+        			}else {
+
+        			}
+    			});
+		</script>
+	</body>
+</html>
+

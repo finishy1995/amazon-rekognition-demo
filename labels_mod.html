@@ -1,0 +1,111 @@
+<DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="David Wang 王元恺">
+		<meta name="date" content="2017-05-09">
+
+		<title>图像审核</title>
+
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/common.css" rel="stylesheet">
+
+		<script src="./js/aws-sdk-2.48.0.min.js"></script>
+		<script src="./js/common.js"></script>
+		<script>
+			window.onload = function() {
+				Unauthenticated_Login();
+				Labels_Mod_Default();
+			}
+			
+			function Labels_Mod_Default() {
+				var img = document.getElementById("pic-show-img");
+				var params = {
+					MinConfidence: 0,
+					Image: {
+						S3Object: {
+							Bucket: BUCKET_NAME,
+							Name: img.src.substring(img.src.indexOf("img/"))
+						}
+					}
+				}
+				var modal = document.getElementsByClassName("modal");
+				modal[0].style.display = "block";
+
+				var rekognition = new AWS.Rekognition();
+				rekognition.detectModerationLabels(params, function(err, data) {
+					if (err == null) Handle_Labels_Mod_Data(data);
+					modal[0].style.display = "none";
+				});
+			}
+		</script>
+	</head>
+
+	<body>
+		<!-- Navigation -->
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="modal" style="display: none">
+				<div class="centerX">
+					<img alt="loading..." src="img/loader.gif" />
+				</div>
+			</div>
+			<div class="container">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="./index.html"><img src="img/logo.png"></img></a>
+				</div>
+			</div>
+			<!-- /.container -->
+		</nav>
+
+		<div class="block-fit-navbar"></div>
+
+		<div class="container">
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<div class="page-header">
+						<h2>图像审核 <small>Amazon Rekognition DEMO</small></h2>
+					</div>
+				</div>
+			</div>
+
+			<div class="row clearfix main-content">
+				<div class="col-md-12 column">
+					<h3>演示描述</h3>
+					<p>自动识别您上传的图像，审核图像中是否具有明确或暗示性的成人内容，并给出判断的置信度。（为了保护您的隐私，您上传的图像不会被保存下来。）</p>
+				</div>
+
+				<div class="col-md-12 column">
+					<h3>演示内容</h3>
+				</div>
+				<div class="col-md-12 column upload-picture-button">
+					<input type="file" id="picture-file" alt="请升级浏览器版本用于支持文件上传功能" onchange="Upload_Picture(this)">
+					<a class="btn btn-primary btn-large button-margin" onclick="Labels_Mod()">审核图片</a>
+				</div>
+				<div class="col-md-8 column" id="pic-show">
+					<img id="pic-show-img" alt="您的浏览器版本过老，不支持 data URI scheme，图片无法显示!" src="img/labels_mod/demo.jpg" />
+				</div>
+				<div class="col-md-4 column" id="pic-info">
+					<label class="pic-info-error" style="display: none">您所选择的图片符合要求。</label>
+				</div>
+			</div>
+
+			<hr>
+			<div class="row clearfix footer">
+				<div class="col-md-12 column">
+					<p>Copyright © Amazon Web Services 2017</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+

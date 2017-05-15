@@ -1,0 +1,129 @@
+<DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="David Wang 王元恺">
+		<meta name="date" content="2017-05-09">
+
+		<title>面孔比较</title>
+
+		<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/common.css" rel="stylesheet">
+
+		<script src="./js/aws-sdk-2.48.0.min.js"></script>
+		<script src="./js/common.js"></script>
+		<script>
+			window.onload = function() {
+				Unauthenticated_Login();
+				Face_Compare_Default();
+			}
+			
+			function Face_Compare_Default() {
+				var img = document.getElementById("pic-show-img");
+				var img2 = document.getElementById("pic-show-img2");
+				var params = {
+					SimilarityThreshold: MIN_SIMILARITY,
+					SourceImage: {
+						S3Object: {
+							Bucket: BUCKET_NAME,
+							Name: img.src.substring(img.src.indexOf("img/"))
+						}
+					},
+					TargetImage: {
+						S3Object: {
+							Bucket: BUCKET_NAME,
+							Name: img2.src.substring(img.src.indexOf("img/"))
+						}
+					}
+				}
+				var modal = document.getElementsByClassName("modal");
+				modal[0].style.display = "block";
+
+				var rekognition = new AWS.Rekognition();
+				rekognition.compareFaces(params, function(err, data) {
+					if (err == null) Handle_Face_Compare_Data(data);
+					else console.log(err);
+					modal[0].style.display = "none";
+				});
+			}
+		</script>
+	</head>
+
+	<body>
+		<!-- Navigation -->
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="modal" style="display: none">
+				<div class="centerX">
+					<img alt="loading..." src="img/loader.gif" />
+				</div>
+			</div>
+			<div class="container">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="./index.html"><img src="img/logo.png"></img></a>
+				</div>
+			</div>
+			<!-- /.container -->
+		</nav>
+
+		<div class="block-fit-navbar"></div>
+
+		<div class="container">
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<div class="page-header">
+						<h2>面孔比较 <small>Amazon Rekognition DEMO</small></h2>
+					</div>
+				</div>
+			</div>
+
+			<div class="row clearfix main-content">
+				<div class="col-md-12 column">
+					<h3>演示描述</h3>
+					<p>自动识别您上传的源图像和目标图像，识别图像中的面孔并给出面孔相似的程度，相似度越高越可能为同一个人。（为了保护您的隐私，您上传的图像不会被保存下来。）</p>
+				</div>
+
+				<div class="col-md-12 column">
+					<h3>演示内容</h3>
+				</div>
+				<div class="col-md-12 column upload-picture-button">
+					<input type="file" id="picture-file" alt="请升级浏览器版本用于支持文件上传功能" onchange="Upload_Picture(this)">
+					<input type="file" id="picture-file2" alt="请升级浏览器版本用于支持文件上传功能" onchange="Upload_Picture2(this)">
+					<a class="btn btn-primary btn-large button-margin" onclick="Face_Compare()">比较面孔</a>
+				</div>
+				<div class="col-md-12 column" id="pic-show">
+					<div class="col-md-6">
+						<img id="pic-show-img" alt="您的浏览器版本过老，不支持 data URI scheme，图片无法显示!" src="img/face_compare/demo.jpg" />
+					</div>
+					<div class="col-md-6">
+						<img id="pic-show-img2" alt="您的浏览器版本过老，不支持 data URI scheme，图片无法显示!" src="img/face_compare/demo2.jpg" />
+					</div>
+				</div>
+				<div class="col-md-12 column">
+					<h3>比较结果</h3>
+				</div>
+				<div class="col-md-12 column face-compare-result">
+					<label class="face-compare-failure" style="display: none">您所上传的图片面孔不匹配。</label>
+					<label class="face-compare-error" style="display: none">您所上传的图片中没有面孔，请重试!</label>
+				</div>
+			</div>
+			
+			<hr>
+			<div class="row clearfix footer">
+				<div class="col-md-12 column">
+					<p>Copyright © Amazon Web Services 2017</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+
