@@ -1,9 +1,9 @@
 /// <reference types="aws-sdk" />
 
-const BUCKET_NAME = "amazon-rekognition-demo";
+const BUCKET_NAME = "Your-Bucket-Name";
 const MAX_FILE_LENGTH = 4194304;	// 4MB Limited
 const REGION = "us-west-2";
-const POOL_ID = "us-west-2:1d51c94a-8748-4cbc-981e-ea3eabb16c4a";
+const POOL_ID = "Your-Pool-Id";
 const MAX_LABELS = 50;
 const MIN_CONFIDENCE = 30;
 const MIN_SIMILARITY = 80;
